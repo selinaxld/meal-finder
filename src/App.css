@@ -12,3 +12,23 @@
   max-height: 200px;
   max-width: 200px;
 }
+
+.Meal{
+  border-radius: 10px;
+}
+
+.prev{
+  position: absolute;
+  top: 50%;
+  transform: translate(0, -50%);
+  left: 5px;
+  cursor: pointer;
+}
+
+.next{
+  position: absolute;
+  top: 50%;
+  transform: translate(0, -50%);
+  right: 5px;
+  cursor: pointer;
+}
