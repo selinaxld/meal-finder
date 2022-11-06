@@ -8,11 +8,15 @@ export const Meal = ({
     measures,
     instructions,
 }) => {
-
+// console.log(name,
+//     img,
+//     ingredients,
+//     measures,
+//     instructions)
     return(
         <div>
             <h1>{name}</h1>
-            <img src={img}/>
+            <img src={img} />
             <Ingredients ingredients={ingredients} measures={measures}/>
             <Instructions instructions={instructions} />
         </div>

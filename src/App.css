@@ -14,11 +14,12 @@
 }
 
 .Meal{
-  border-radius: 10px;
+  margin-left: 40px;
+  margin-right: 40px;
 }
 
 .prev{
-  position: absolute;
+  position: fixed;
   top: 50%;
   transform: translate(0, -50%);
   left: 5px;
@@ -26,7 +27,7 @@
 }
 
 .next{
-  position: absolute;
+  position: fixed;
   top: 50%;
   transform: translate(0, -50%);
   right: 5px;

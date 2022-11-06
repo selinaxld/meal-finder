@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Meal } from "./meal";
-import '../App.css';
+import "../App.css";
 
 export const MealContainer = () => {
-  const [meals, setMeals] = useState([]);
   const [index, setIndex] = useState(0);
+  const [isLoading, setLoading] = useState(true);
+  const [meals, setMeals] = useState([]);
+  const [mealDetails, setDetails] = useState({});
   const ingredientKeys = [
     "strIngredient1",
     "strIngredient2",
@@ -51,6 +53,7 @@ export const MealContainer = () => {
   ];
 
   const getMeals = async () => {
+    setLoading(true);
     fetch("https://www.themealdb.com/api/json/v1/1/filter.php?a=Canadian")
       .then((response) => response.json())
       .then((json) => {
@@ -63,22 +66,25 @@ export const MealContainer = () => {
       });
   };
 
-  const getMealDetails = async (currentMeal, name) => {
+  const getMealDetails = async () => {
+    let name = meals[index].strMeal;
     fetch("https://www.themealdb.com/api/json/v1/1/search.php?s=" + name)
       .then((response) => response.json())
       .then((json) => {
         let meal = json.meals[0];
-        currentMeal.strMealThumb = meal.strMealThumb;
-        currentMeal.strInstructions = meal.strInstructions;
-        currentMeal.ingredients = [];
-        currentMeal.measures = [];
+        let tempMeal = {};
+        tempMeal.strInstructions = meal.strInstructions;
+        tempMeal.ingredients = [];
+        tempMeal.measures = [];
         for (let i = 0; i < 20; i++) {
           if (meal[ingredientKeys[i]] !== "") {
-            currentMeal.ingredients.push(meal[ingredientKeys[i]]);
-            currentMeal.measures.push(meal[measureKeys[i]]);
+            tempMeal.ingredients.push(meal[ingredientKeys[i]]);
+            tempMeal.measures.push(meal[measureKeys[i]]);
           }
         }
-        setMeals(meals)
+        mealDetails[meal.idMeal] = tempMeal;
+        setDetails(mealDetails);
+        setLoading(false);
       })
       .catch((error) => {
         console.error(error);
@@ -90,41 +96,48 @@ export const MealContainer = () => {
   }, []);
 
   useEffect(() => {
-    meals.map(
-      (meal) =>
-        meals && !meal.strInstructions && getMealDetails(meal, meal.strMeal)
-    );
-  })
+    if (meals[index] != null) {
+      if (mealDetails[meals[index].idMeal] == null) {
+        getMealDetails();
+      } else {
+        setLoading(false);
+      }
+    }
+  }, [meals, index]);
 
   const getPrev = () => {
-    const isFirst = index === 0
-    const newIndex = isFirst ? meals.length-1 : index-1
-    setIndex(newIndex)
+    setLoading(true);
+    const isFirst = index === 0;
+    const newIndex = isFirst ? meals.length - 1 : index - 1;
+    setIndex(newIndex);
   };
 
   const getNext = () => {
-    const isLast = index === meals.length-1
-    const newIndex = isLast ? 0 : index+1
-    setIndex(newIndex)
+    setLoading(true);
+    const isLast = index === meals.length - 1;
+    const newIndex = isLast ? 0 : index + 1;
+    setIndex(newIndex);
   };
-
-  //meals array is filled successfully, but display causes error. 
-  //Uncaught TypeError: Cannot read properties of undefined (reading 'ingredients')
-  //no error on save, only manual refresh
-
-  //Uncaught Error: Too many re-renders.
 
   return (
     <div>
-      {/* <button className='prev' onClick={getPrev()}>previous</button> */}
-      {/* <Meal
-        name={meals[index].strMeal}
-        img={meals[index].strMealThumb}
-        ingredients={meals[index].ingredients}
-        measures={meals[index].measures}
-        instructions={meals[index].strInstructions}
-      /> */}
-      {/* <button className='next' onClick={getNext()}>next</button> */}
+      <button className="prev" onClick={getPrev}>
+        {"<"}
+      </button>
+      <div className='Meal'>
+        {!isLoading && (
+          <Meal
+            name={meals[index].strMeal}
+            img={meals[index].strMealThumb}
+            ingredients={mealDetails[meals[index].idMeal].ingredients}
+            measures={mealDetails[meals[index].idMeal].measures}
+            instructions={mealDetails[meals[index].idMeal].strInstructions}
+          />
+        )}
+      </div>
+      <button className="next" onClick={getNext}>
+        {">"}
+      </button>
     </div>
   );
 };
