@@ -1,12 +1,28 @@
 import React, { useEffect, useState } from "react";
+import Dropdown from 'react-dropdown';
 import { Meal } from "./meal";
-import "../App.css";
 
 export const MealContainer = () => {
   const [index, setIndex] = useState(0);
   const [isLoading, setLoading] = useState(true);
+  const [country, setCountry] = useState('Canadian')
   const [meals, setMeals] = useState([]);
   const [mealDetails, setDetails] = useState({});
+  const countries = [
+    "Canadian",
+    "American",
+    "British",
+    "French",
+    "Chinese",
+    "Italian",
+    "Indian",
+    "Japanese",
+    "Greek",
+    "Malaysian",
+    "Mexican",
+    "Thai",
+    "Vietnamese",
+  ]
   const ingredientKeys = [
     "strIngredient1",
     "strIngredient2",
@@ -54,7 +70,7 @@ export const MealContainer = () => {
 
   const getMeals = async () => {
     setLoading(true);
-    fetch("https://www.themealdb.com/api/json/v1/1/filter.php?a=Canadian")
+    fetch("https://www.themealdb.com/api/json/v1/1/filter.php?a=" + country)
       .then((response) => response.json())
       .then((json) => {
         const mealTemp = [];
@@ -93,7 +109,7 @@ export const MealContainer = () => {
 
   useEffect(() => {
     getMeals();
-  }, []);
+  }, [country]);
 
   useEffect(() => {
     if (meals[index] != null) {
@@ -104,6 +120,11 @@ export const MealContainer = () => {
       }
     }
   }, [meals, index]);
+
+  const onSelect = (e) => {
+    setLoading(true)
+    setCountry(e.value)
+  }
 
   const getPrev = () => {
     setLoading(true);
@@ -121,6 +142,7 @@ export const MealContainer = () => {
 
   return (
     <div>
+      <Dropdown className='countrySelect' options={countries} onChange={onSelect} value={country} />
       <button className="prev" onClick={getPrev}>
         {"<"}
       </button>
